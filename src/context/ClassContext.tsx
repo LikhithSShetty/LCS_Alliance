@@ -1,4 +1,3 @@
-
 import React, { createContext, useState, useEffect, useContext, ReactNode } from 'react';
 import { Class, Enrollment, Video, User } from '@/types';
 import { useAuth } from './AuthContext';
@@ -61,6 +60,17 @@ const mockClasses: Class[] = [
 const mockVideos: Video[] = [
   {
     id: '1',
+    title: 'LCS ALLIANCE UNIVERSITY Orientation',
+    videoId: '6DG-aUuFxfY',
+    classId: '1',
+    date: new Date().toISOString().split('T')[0], // Today's date
+    time: new Date().toLocaleTimeString(),
+    subject: 'University Orientation',
+    description: 'Welcome orientation for new students at LCS ALLIANCE UNIVERSITY',
+    duration: '2:13:20'
+  },
+  {
+    id: '2',
     title: 'Intro to CS - Lecture 1: Algorithms',
     videoId: 'dQw4w9WgXcQ', // Replace with actual YouTube video ID
     classId: '1',
@@ -71,7 +81,7 @@ const mockVideos: Video[] = [
     duration: '45:20'
   },
   {
-    id: '2',
+    id: '3',
     title: 'Intro to CS - Lecture 2: Data Structures',
     videoId: 'dQw4w9WgXcQ', // Replace with actual YouTube video ID
     classId: '1',
@@ -82,7 +92,7 @@ const mockVideos: Video[] = [
     duration: '50:15'
   },
   {
-    id: '3',
+    id: '4',
     title: 'Advanced Math - Lecture 1: Calculus Review',
     videoId: 'dQw4w9WgXcQ', // Replace with actual YouTube video ID
     classId: '2',
@@ -93,7 +103,7 @@ const mockVideos: Video[] = [
     duration: '55:00'
   },
   {
-    id: '4',
+    id: '5',
     title: 'Physics 101 - Lecture 1: Newton\'s Laws',
     videoId: 'dQw4w9WgXcQ', // Replace with actual YouTube video ID
     classId: '3',
@@ -104,7 +114,7 @@ const mockVideos: Video[] = [
     duration: '48:30'
   },
   {
-    id: '5',
+    id: '6',
     title: 'Web Development - Lecture 1: HTML Basics',
     videoId: 'dQw4w9WgXcQ', // Replace with actual YouTube video ID
     classId: '4',
