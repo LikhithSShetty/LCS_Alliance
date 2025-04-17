@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Video } from '@/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -20,7 +19,7 @@ export const VideoPlayer = ({ video }: VideoPlayerProps) => {
           <iframe
             width="100%"
             height="100%"
-            src={`https://www.youtube.com/embed/${video.videoId}`}
+            src={`https://www.youtube.com/embed/${video.videoId}?rel=0&modestbranding=1&showinfo=0&controls=1&cc_load_policy=1&iv_load_policy=3&loop=1&playlist=${video.videoId}`}
             title={video.title}
             frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
