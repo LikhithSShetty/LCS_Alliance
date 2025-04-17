@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -17,35 +16,26 @@ export const Header = () => {
   const navigate = useNavigate();
   
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur">
+    <header className="sticky top-0 z-50 w-full border-b bg-white shadow-sm">
       <div className="container flex h-16 items-center justify-between">
-        <Link to="/" className="flex items-center space-x-2">
-          <div className="bg-lecture-500 text-white p-1.5 rounded-md">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="h-5 w-5"
-            >
-              <path d="M18 3a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3H6a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3V6a3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3h12a3 3 0 0 0 3-3 3 3 0 0 0-3-3z"></path>
-            </svg>
-          </div>
-          <span className="font-bold text-xl">LectureVault</span>
+        <Link to="/" className="flex items-center space-x-3">
+          <img 
+            src="/lovable-uploads/6c287f3a-c3f0-4df7-bd5f-a8608f03bc1e.png" 
+            alt="LCS ALLIANCE UNIVERSITY Logo" 
+            className="h-12 w-12"
+          />
+          <span className="font-bold text-xl text-primary-100">LCS ALLIANCE UNIVERSITY</span>
         </Link>
         
-        <nav className="hidden md:flex items-center space-x-4">
-          <Link to="/" className="text-foreground/60 hover:text-foreground transition-colors">
+        <nav className="hidden md:flex items-center space-x-6">
+          <Link to="/" className="text-text-100 hover:text-primary-100 transition-colors">
             Home
           </Link>
-          <Link to="/classes" className="text-foreground/60 hover:text-foreground transition-colors">
+          <Link to="/classes" className="text-text-100 hover:text-primary-100 transition-colors">
             Classes
           </Link>
           {isAuthenticated && (
-            <Link to="/dashboard" className="text-foreground/60 hover:text-foreground transition-colors">
+            <Link to="/dashboard" className="text-text-100 hover:text-primary-100 transition-colors">
               Dashboard
             </Link>
           )}
@@ -55,7 +45,7 @@ export const Header = () => {
           {isAuthenticated ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="icon" className="rounded-full">
+                <Button variant="outline" size="icon" className="rounded-full border-primary-100 text-primary-100">
                   <User className="h-5 w-5" />
                 </Button>
               </DropdownMenuTrigger>
@@ -88,16 +78,24 @@ export const Header = () => {
             </DropdownMenu>
           ) : (
             <>
-              <Button variant="ghost" onClick={() => navigate('/login')}>
+              <Button 
+                variant="ghost" 
+                onClick={() => navigate('/login')}
+                className="text-text-100 hover:text-primary-100"
+              >
                 Log in
               </Button>
-              <Button variant="default" onClick={() => navigate('/register')}>
+              <Button 
+                variant="default" 
+                onClick={() => navigate('/register')}
+                className="bg-primary-100 hover:bg-primary-200 text-white"
+              >
                 Sign up
               </Button>
             </>
           )}
           
-          <Button variant="outline" size="icon" className="md:hidden">
+          <Button variant="outline" size="icon" className="md:hidden border-primary-100 text-primary-100">
             <Menu className="h-5 w-5" />
           </Button>
         </div>
