@@ -4,12 +4,13 @@ import { PageLayout } from '@/components/Layout/PageLayout';
 import { useAuth } from '@/context/AuthContext';
 import { useClasses } from '@/context/ClassContext';
 import { ClassCard } from '@/components/Class/ClassCard';
+import { VideoPlayer } from '@/components/Video/VideoPlayer';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
   const { user, isAuthenticated } = useAuth();
-  const { enrolledClasses, isLoading } = useClasses();
+  const { enrolledClasses, isLoading, videos } = useClasses();
   const navigate = useNavigate();
   
   useEffect(() => {
@@ -17,6 +18,9 @@ const Dashboard = () => {
       navigate('/login');
     }
   }, [isAuthenticated, navigate]);
+  
+  // Find orientation video to display for all users
+  const orientationVideo = videos.find(video => video.title.includes('Orientation'));
   
   if (!user) {
     return null;
@@ -39,6 +43,13 @@ const Dashboard = () => {
             Browse All Classes
           </Button>
         </div>
+        
+        {orientationVideo && (
+          <section className="mb-8">
+            <h2 className="text-2xl font-semibold mb-6">University Orientation</h2>
+            <VideoPlayer video={orientationVideo} />
+          </section>
+        )}
         
         <section className="mb-8">
           <h2 className="text-2xl font-semibold mb-6">My Enrolled Classes</h2>
