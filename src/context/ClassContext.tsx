@@ -1,6 +1,7 @@
 import React, { createContext, useState, useEffect, useContext, ReactNode } from 'react';
 import { Class, Enrollment, Video, User } from '@/types';
 import { useAuth } from './AuthContext';
+import { useToast } from "@/components/ui/use-toast";
 
 interface ClassContextType {
   classes: Class[];
@@ -11,8 +12,14 @@ interface ClassContextType {
   error: string | null;
   getClassById: (id: string) => Class | undefined;
   getClassVideos: (classId: string) => Video[];
+  getClassEnrollments: (classId: string) => Enrollment[];
   enrollInClass: (classId: string) => Promise<void>;
   isEnrolled: (classId: string) => boolean;
+  enrollmentStatus: (classId: string) => 'pending' | 'approved' | 'rejected' | null;
+  createClass: (classData: Omit<Class, 'id'>) => Promise<void>;
+  updateClassEnrollment: (userId: string, classId: string, status: 'pending' | 'approved' | 'rejected') => Promise<void>;
+  addVideo: (videoData: Omit<Video, 'id'>) => Promise<void>;
+  removeVideo: (videoId: string) => Promise<void>;
 }
 
 const ClassContext = createContext<ClassContextType | undefined>(undefined);
@@ -127,7 +134,8 @@ const mockVideos: Video[] = [
 ];
 
 export const ClassProvider = ({ children }: { children: ReactNode }) => {
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
+  const { toast } = useToast();
   const [classes, setClasses] = useState<Class[]>(mockClasses);
   const [videos, setVideos] = useState<Video[]>(mockVideos);
   const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
@@ -146,6 +154,22 @@ export const ClassProvider = ({ children }: { children: ReactNode }) => {
         const storedEnrollments = localStorage.getItem('enrollments');
         if (storedEnrollments) {
           setEnrollments(JSON.parse(storedEnrollments));
+        }
+        
+        // Load classes from localStorage if available
+        const storedClasses = localStorage.getItem('classes');
+        if (storedClasses) {
+          setClasses(JSON.parse(storedClasses));
+        } else {
+          localStorage.setItem('classes', JSON.stringify(classes));
+        }
+        
+        // Load videos from localStorage if available
+        const storedVideos = localStorage.getItem('videos');
+        if (storedVideos) {
+          setVideos(JSON.parse(storedVideos));
+        } else {
+          localStorage.setItem('videos', JSON.stringify(videos));
         }
       } catch (error) {
         setError('Failed to load data');
@@ -174,7 +198,25 @@ export const ClassProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const getClassVideos = (classId: string) => {
-    return videos.filter(video => video.classId === classId);
+    // Only return videos if the user is enrolled in the class or is an admin
+    if (!user) return [];
+    
+    if (isAdmin() || enrollments.some(
+      enrollment => 
+        enrollment.classId === classId && 
+        enrollment.userId === user.id &&
+        enrollment.status === 'approved'
+    )) {
+      return videos.filter(video => video.classId === classId);
+    }
+    
+    return [];
+  };
+  
+  const getClassEnrollments = (classId: string) => {
+    if (!user || !isAdmin()) return [];
+    
+    return enrollments.filter(enrollment => enrollment.classId === classId);
   };
 
   const isEnrolled = (classId: string) => {
@@ -183,14 +225,39 @@ export const ClassProvider = ({ children }: { children: ReactNode }) => {
     return enrollments.some(
       enrollment => 
         enrollment.classId === classId && 
-        enrollment.userId === user.id &&
-        enrollment.status === 'approved'
+        enrollment.userId === user.id
     );
+  };
+  
+  const enrollmentStatus = (classId: string) => {
+    if (!user) return null;
+    
+    const enrollment = enrollments.find(
+      e => e.classId === classId && e.userId === user.id
+    );
+    
+    return enrollment ? enrollment.status : null;
   };
 
   const enrollInClass = async (classId: string) => {
     if (!user) {
       setError('You must be logged in to enroll in a class');
+      toast({
+        title: "Enrollment Failed",
+        description: "You must be logged in to enroll in a class",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Check if already enrolled
+    if (isEnrolled(classId)) {
+      setError('You are already enrolled in this class');
+      toast({
+        title: "Already Enrolled",
+        description: "You are already enrolled in this class",
+        variant: "destructive"
+      });
       return;
     }
 
@@ -211,8 +278,190 @@ export const ClassProvider = ({ children }: { children: ReactNode }) => {
       
       // Store in localStorage for persistence
       localStorage.setItem('enrollments', JSON.stringify(updatedEnrollments));
+      
+      toast({
+        title: "Enrollment Successful",
+        description: "You have successfully enrolled in this class",
+      });
     } catch (error) {
       setError('Failed to enroll in class');
+      toast({
+        title: "Enrollment Failed",
+        description: "Failed to enroll in class",
+        variant: "destructive"
+      });
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  const updateClassEnrollment = async (userId: string, classId: string, status: 'pending' | 'approved' | 'rejected') => {
+    if (!user || !isAdmin()) {
+      setError('You are not authorized to perform this action');
+      toast({
+        title: "Authorization Error",
+        description: "You are not authorized to perform this action",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    setIsLoading(true);
+    try {
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      const updatedEnrollments = enrollments.map(enrollment => {
+        if (enrollment.userId === userId && enrollment.classId === classId) {
+          return { ...enrollment, status };
+        }
+        return enrollment;
+      });
+      
+      setEnrollments(updatedEnrollments);
+      
+      // Store in localStorage for persistence
+      localStorage.setItem('enrollments', JSON.stringify(updatedEnrollments));
+      
+      toast({
+        title: "Enrollment Updated",
+        description: `Enrollment status updated to ${status}`,
+      });
+    } catch (error) {
+      setError('Failed to update enrollment');
+      toast({
+        title: "Update Failed",
+        description: "Failed to update enrollment status",
+        variant: "destructive"
+      });
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  const createClass = async (classData: Omit<Class, 'id'>) => {
+    if (!user || !isAdmin()) {
+      setError('You are not authorized to perform this action');
+      toast({
+        title: "Authorization Error",
+        description: "You are not authorized to perform this action",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    setIsLoading(true);
+    try {
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      const newClass: Class = {
+        ...classData,
+        id: Math.random().toString(36).substring(2, 9)
+      };
+      
+      const updatedClasses = [...classes, newClass];
+      setClasses(updatedClasses);
+      
+      // Store in localStorage for persistence
+      localStorage.setItem('classes', JSON.stringify(updatedClasses));
+      
+      toast({
+        title: "Class Created",
+        description: "New class has been created successfully",
+      });
+    } catch (error) {
+      setError('Failed to create class');
+      toast({
+        title: "Class Creation Failed",
+        description: "Failed to create new class",
+        variant: "destructive"
+      });
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  const addVideo = async (videoData: Omit<Video, 'id'>) => {
+    if (!user || !isAdmin()) {
+      setError('You are not authorized to perform this action');
+      toast({
+        title: "Authorization Error",
+        description: "You are not authorized to perform this action",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    setIsLoading(true);
+    try {
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      const newVideo: Video = {
+        ...videoData,
+        id: Math.random().toString(36).substring(2, 9)
+      };
+      
+      const updatedVideos = [...videos, newVideo];
+      setVideos(updatedVideos);
+      
+      // Store in localStorage for persistence
+      localStorage.setItem('videos', JSON.stringify(updatedVideos));
+      
+      toast({
+        title: "Video Added",
+        description: "New video has been added successfully",
+      });
+    } catch (error) {
+      setError('Failed to add video');
+      toast({
+        title: "Video Addition Failed",
+        description: "Failed to add new video",
+        variant: "destructive"
+      });
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  const removeVideo = async (videoId: string) => {
+    if (!user || !isAdmin()) {
+      setError('You are not authorized to perform this action');
+      toast({
+        title: "Authorization Error",
+        description: "You are not authorized to perform this action",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    setIsLoading(true);
+    try {
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      const updatedVideos = videos.filter(video => video.id !== videoId);
+      setVideos(updatedVideos);
+      
+      // Store in localStorage for persistence
+      localStorage.setItem('videos', JSON.stringify(updatedVideos));
+      
+      toast({
+        title: "Video Removed",
+        description: "Video has been removed successfully",
+      });
+    } catch (error) {
+      setError('Failed to remove video');
+      toast({
+        title: "Video Removal Failed",
+        description: "Failed to remove video",
+        variant: "destructive"
+      });
       console.error(error);
     } finally {
       setIsLoading(false);
@@ -230,8 +479,14 @@ export const ClassProvider = ({ children }: { children: ReactNode }) => {
         error,
         getClassById,
         getClassVideos,
+        getClassEnrollments,
         enrollInClass,
-        isEnrolled
+        isEnrolled,
+        enrollmentStatus,
+        createClass,
+        updateClassEnrollment,
+        addVideo,
+        removeVideo
       }}
     >
       {children}

@@ -1,15 +1,16 @@
-
 import React, { createContext, useState, useEffect, useContext, ReactNode } from 'react';
 import { User } from '@/types';
+import { useToast } from "@/components/ui/use-toast";
 
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (username: string, email: string, password: string) => Promise<void>;
+  register: (username: string, email: string, password: string, role?: 'student' | 'admin') => Promise<void>;
   logout: () => void;
   error: string | null;
+  isAdmin: () => boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -20,6 +21,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { toast } = useToast();
 
   // Check if user is already logged in
   useEffect(() => {
@@ -33,6 +35,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
     setIsLoading(false);
   }, []);
+
+  // Check if user is an admin
+  const isAdmin = () => {
+    return user?.role === 'admin';
+  };
 
   // Mock login function
   const login = async (email: string, password: string) => {
@@ -54,6 +61,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         
         setUser(userData);
         localStorage.setItem('lectureUser', JSON.stringify(userData));
+        toast({
+          title: "Login successful",
+          description: "Welcome back, testuser!"
+        });
       } else if (email === 'admin@example.com' && password === 'password') {
         const adminData: User = {
           id: '2',
@@ -64,18 +75,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         
         setUser(adminData);
         localStorage.setItem('lectureUser', JSON.stringify(adminData));
+        toast({
+          title: "Admin login successful",
+          description: "Welcome back, adminuser!"
+        });
       } else {
         throw new Error('Invalid credentials');
       }
     } catch (error) {
       setError((error as Error).message);
+      toast({
+        title: "Login failed",
+        description: (error as Error).message,
+        variant: "destructive"
+      });
     } finally {
       setIsLoading(false);
     }
   };
 
   // Mock register function
-  const register = async (username: string, email: string, password: string) => {
+  const register = async (username: string, email: string, password: string, role: 'student' | 'admin' = 'student') => {
     setIsLoading(true);
     setError(null);
     
@@ -97,13 +117,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         id: Math.random().toString(36).substring(2, 9),
         username,
         email,
-        role: 'student'
+        role
       };
       
       setUser(userData);
       localStorage.setItem('lectureUser', JSON.stringify(userData));
+      toast({
+        title: "Registration successful",
+        description: `Welcome, ${username}!`
+      });
     } catch (error) {
       setError((error as Error).message);
+      toast({
+        title: "Registration failed",
+        description: (error as Error).message,
+        variant: "destructive"
+      });
     } finally {
       setIsLoading(false);
     }
@@ -112,6 +141,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const logout = () => {
     setUser(null);
     localStorage.removeItem('lectureUser');
+    toast({
+      title: "Logged out",
+      description: "You have been successfully logged out"
+    });
   };
 
   return (
@@ -123,7 +156,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         login,
         register,
         logout,
-        error
+        error,
+        isAdmin
       }}
     >
       {children}

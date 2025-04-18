@@ -1,4 +1,3 @@
-
 import React, { ReactNode } from 'react';
 import { Header } from './Header';
 
@@ -14,16 +13,20 @@ export const PageLayout = ({ children, className = '' }: PageLayoutProps) => {
       <main className={`flex-1 ${className}`}>
         {children}
       </main>
-      <footer className="border-t py-6 md:py-0">
-        <div className="container flex flex-col items-center justify-between gap-4 md:h-16 md:flex-row">
-          <p className="text-sm text-muted-foreground">
-            &copy; {new Date().getFullYear()} LectureVault. All rights reserved.
-          </p>
-          <div className="flex items-center gap-4 text-sm text-muted-foreground">
-            <a href="#" className="hover:underline">Terms</a>
-            <a href="#" className="hover:underline">Privacy</a>
-            <a href="#" className="hover:underline">Contact</a>
-          </div>
+      <footer className="border-t py-4">
+        <div className="container flex items-center justify-between">
+          <p className="text-sm text-muted-foreground">© 2024 LCS Alliance. All rights reserved.</p>
+          <nav className="flex gap-4">
+            <a href="#" className="text-sm hover:underline">
+              Terms
+            </a>
+            <a href="#" className="text-sm hover:underline">
+              Privacy
+            </a>
+            <a href="#" className="text-sm hover:underline">
+              Contact
+            </a>
+          </nav>
         </div>
       </footer>
     </div>

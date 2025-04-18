@@ -21,10 +21,10 @@ export const Header = () => {
         <Link to="/" className="flex items-center space-x-3">
           <img 
             src="/lovable-uploads/6c287f3a-c3f0-4df7-bd5f-a8608f03bc1e.png" 
-            alt="LCS ALLIANCE UNIVERSITY Logo" 
+            alt="LCS Alliance University Logo" 
             className="h-12 w-12"
           />
-          <span className="font-bold text-xl text-primary-100">LCS ALLIANCE UNIVERSITY</span>
+          <span className="font-sans font-semibold text-xl text-gray-800 tracking-tight">LCS Alliance University</span>
         </Link>
         
         <nav className="hidden md:flex items-center space-x-6">

@@ -1,13 +1,51 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Video } from '@/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { CalendarDays, Clock } from 'lucide-react';
+import { CalendarDays, Clock, Shield } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 interface VideoPlayerProps {
   video: Video;
 }
 
 export const VideoPlayer = ({ video }: VideoPlayerProps) => {
+  const { isAuthenticated } = useAuth();
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Add basic protection to verify authentication state on component mount
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setError('You must be logged in to view this video');
+      return;
+    }
+    setIsLoading(false);
+  }, [isAuthenticated]);
+
+  if (error) {
+    return (
+      <Alert variant="destructive">
+        <Shield className="h-4 w-4" />
+        <AlertTitle>Access Denied</AlertTitle>
+        <AlertDescription>{error}</AlertDescription>
+      </Alert>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <Card className="overflow-hidden">
+        <CardContent className="p-6">
+          <div className="h-48 flex items-center justify-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Render the video player with added security params
   return (
     <Card className="overflow-hidden">
       <CardHeader>
@@ -19,10 +57,10 @@ export const VideoPlayer = ({ video }: VideoPlayerProps) => {
           <iframe
             width="100%"
             height="100%"
-            src={`https://www.youtube.com/embed/${video.videoId}?rel=0&modestbranding=1&showinfo=0&controls=1&cc_load_policy=1&iv_load_policy=3&loop=1&playlist=${video.videoId}`}
+            src={`https://www.youtube.com/embed/${video.videoId}?rel=0&modestbranding=1&showinfo=0&controls=1&cc_load_policy=1&iv_load_policy=3&origin=${window.location.origin}`}
             title={video.title}
             frameBorder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
           ></iframe>
         </div>
@@ -54,6 +92,10 @@ export const VideoPlayer = ({ video }: VideoPlayerProps) => {
               <span>Duration: {video.duration}</span>
             </div>
           )}
+          <div className="flex items-center">
+            <Shield className="mr-1 h-4 w-4" />
+            <span>Protected Content</span>
+          </div>
         </div>
       </CardContent>
     </Card>

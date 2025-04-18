@@ -1,24 +1,23 @@
-
-import React, { useEffect } from 'react';
+import React from 'react';
 import { PageLayout } from '@/components/Layout/PageLayout';
 import { RegisterForm } from '@/components/Auth/RegisterForm';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/context/AuthContext';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 const Register = () => {
-  const { isAuthenticated } = useAuth();
-  const navigate = useNavigate();
-  
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate('/dashboard');
-    }
-  }, [isAuthenticated, navigate]);
-  
   return (
-    <PageLayout className="flex justify-center items-center bg-gray-50 py-12">
-      <div className="w-full max-w-md px-4">
-        <RegisterForm />
+    <PageLayout>
+      <div className="container max-w-md py-12">
+        <Card>
+          <CardHeader className="space-y-1">
+            <CardTitle className="text-2xl font-bold">Create an Account</CardTitle>
+            <CardDescription>
+              Register to access lecture videos and classes
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <RegisterForm />
+          </CardContent>
+        </Card>
       </div>
     </PageLayout>
   );
