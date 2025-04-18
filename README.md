@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-This project is a web application designed to provide students at LCS Alliance University secure access to recorded class lectures. Videos are hosted as unlisted YouTube videos, and access is managed through user authentication and class enrollment within this platform.
+This project is a web application designed to provide students at Alliance University have a secure access to recorded class lectures. Videos are hosted as unlisted YouTube videos, and access is managed through user authentication and class enrollment within this platform.
 
 The primary goal is to ensure that only authorized students enrolled in specific classes can view the corresponding lecture videos, while administrators can manage classes, users, enrollments, and video links.
 
