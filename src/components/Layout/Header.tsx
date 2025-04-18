@@ -20,9 +20,9 @@ export const Header = () => {
       <div className="container flex h-16 items-center justify-between">
         <Link to="/" className="flex items-center space-x-3">
           <img 
-            src="/lovable-uploads/6c287f3a-c3f0-4df7-bd5f-a8608f03bc1e.png" 
+            src="/Alliance_University_Icon.ico"
             alt="LCS Alliance University Logo" 
-            className="h-12 w-12"
+            className="h-10 w-10"
           />
           <span className="font-sans font-semibold text-xl text-gray-800 tracking-tight">LCS Alliance University</span>
         </Link>
