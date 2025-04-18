@@ -6,6 +6,7 @@ interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  token: string | null;
   login: (email: string, password: string) => Promise<void>;
   register: (username: string, email: string, password: string, role?: 'student' | 'admin') => Promise<void>;
   logout: () => void;
@@ -15,23 +16,33 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// This is a mock implementation for demo purposes
-// In a real app, this would connect to your backend
+// Define the API base URL using Vite's import.meta.env
+// Ensure VITE_API_BASE_URL is defined in your root .env file
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
-  // Check if user is already logged in
+  // Check localStorage for existing session on initial load
   useEffect(() => {
-    const storedUser = localStorage.getItem('lectureUser');
-    if (storedUser) {
-      try {
+    setIsLoading(true);
+    try {
+      const storedToken = localStorage.getItem('lectureToken');
+      const storedUser = localStorage.getItem('lectureUser');
+
+      if (storedToken && storedUser) {
+        setToken(storedToken);
         setUser(JSON.parse(storedUser));
-      } catch (e) {
-        localStorage.removeItem('lectureUser');
       }
+    } catch (e) {
+      // Clear potentially corrupted data
+      localStorage.removeItem('lectureToken');
+      localStorage.removeItem('lectureUser');
+      console.error("Error loading auth state from localStorage", e);
     }
     setIsLoading(false);
   }, []);
@@ -41,109 +52,117 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return user?.role === 'admin';
   };
 
-  // Mock login function
+  // Login function - calls backend API
   const login = async (email: string, password: string) => {
     setIsLoading(true);
     setError(null);
-    
+
     try {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Mock validation
-      if (email === 'student@example.com' && password === 'password') {
-        const userData: User = {
-          id: '1',
-          username: 'testuser',
-          email: 'student@example.com',
-          role: 'student'
-        };
-        
-        setUser(userData);
-        localStorage.setItem('lectureUser', JSON.stringify(userData));
-        toast({
-          title: "Login successful",
-          description: "Welcome back, testuser!"
-        });
-      } else if (email === 'admin@example.com' && password === 'password') {
-        const adminData: User = {
-          id: '2',
-          username: 'adminuser',
-          email: 'admin@example.com',
-          role: 'admin'
-        };
-        
-        setUser(adminData);
-        localStorage.setItem('lectureUser', JSON.stringify(adminData));
-        toast({
-          title: "Admin login successful",
-          description: "Welcome back, adminuser!"
-        });
-      } else {
-        throw new Error('Invalid credentials');
+      // Use the /api/auth prefix
+      const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Login failed');
       }
+
+      // On success, store token and user, update state
+      setToken(data.token);
+      setUser(data.user);
+      localStorage.setItem('lectureToken', data.token);
+      localStorage.setItem('lectureUser', JSON.stringify(data.user));
+
+      toast({
+        title: "Login successful",
+        description: `Welcome back, ${data.user.username}!`,
+      });
+
     } catch (error) {
-      setError((error as Error).message);
+      const errorMessage = (error as Error).message;
+      setError(errorMessage);
       toast({
         title: "Login failed",
-        description: (error as Error).message,
-        variant: "destructive"
+        description: errorMessage,
+        variant: "destructive",
       });
+      // Clear any potentially leftover state/storage on failure
+      setToken(null);
+      setUser(null);
+      localStorage.removeItem('lectureToken');
+      localStorage.removeItem('lectureUser');
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Mock register function
+  // Register function - calls backend API
   const register = async (username: string, email: string, password: string, role: 'student' | 'admin' = 'student') => {
     setIsLoading(true);
     setError(null);
-    
+
     try {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Mock validation
-      if (!username || !email || !password) {
-        throw new Error('All fields are required');
+      // Use the /api/auth prefix
+      const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, email, password, role }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Registration failed');
       }
-      
-      if (password.length < 6) {
-        throw new Error('Password must be at least 6 characters');
-      }
-      
-      // In a real app, you would send this to your backend
-      const userData: User = {
-        id: Math.random().toString(36).substring(2, 9),
-        username,
-        email,
-        role
-      };
-      
-      setUser(userData);
-      localStorage.setItem('lectureUser', JSON.stringify(userData));
+
+      // On success, store token and user, update state
+      setToken(data.token);
+      setUser(data.user);
+      localStorage.setItem('lectureToken', data.token);
+      localStorage.setItem('lectureUser', JSON.stringify(data.user));
+
       toast({
         title: "Registration successful",
-        description: `Welcome, ${username}!`
+        description: `Welcome, ${username}! Please log in.`, // Or log in directly
       });
+      // Optionally log the user in directly after registration
+      // await login(email, password); // Uncomment if direct login is desired
+
     } catch (error) {
-      setError((error as Error).message);
+      const errorMessage = (error as Error).message;
+      setError(errorMessage);
       toast({
         title: "Registration failed",
-        description: (error as Error).message,
-        variant: "destructive"
+        description: errorMessage,
+        variant: "destructive",
       });
+      // Clear any potentially leftover state/storage on failure
+      setToken(null);
+      setUser(null);
+      localStorage.removeItem('lectureToken');
+      localStorage.removeItem('lectureUser');
     } finally {
       setIsLoading(false);
     }
   };
 
+  // Logout function - clears state and localStorage
   const logout = () => {
     setUser(null);
+    setToken(null);
+    localStorage.removeItem('lectureToken');
     localStorage.removeItem('lectureUser');
     toast({
       title: "Logged out",
-      description: "You have been successfully logged out"
+      description: "You have been successfully logged out",
     });
   };
 
@@ -151,13 +170,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     <AuthContext.Provider
       value={{
         user,
-        isAuthenticated: !!user,
+        isAuthenticated: !!token && !!user, // Check for both token and user
         isLoading,
+        token,
         login,
         register,
         logout,
         error,
-        isAdmin
+        isAdmin,
       }}
     >
       {children}

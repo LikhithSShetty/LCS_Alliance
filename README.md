@@ -1,73 +1,118 @@
-# Welcome to your Lovable project
+# LCS Alliance University - Lecture Vault
 
-## Project info
+## Project Overview
 
-**URL**: https://lovable.dev/projects/4d11509d-2038-497c-b57d-faf7d5cdfe23
+This project is a web application designed to provide students at LCS Alliance University secure access to recorded class lectures. Videos are hosted as unlisted YouTube videos, and access is managed through user authentication and class enrollment within this platform.
 
-## How can I edit this code?
+The primary goal is to ensure that only authorized students enrolled in specific classes can view the corresponding lecture videos, while administrators can manage classes, users, enrollments, and video links.
 
-There are several ways of editing your application.
+## Key Features
 
-**Use Lovable**
+*   **Secure User Authentication:** Students and administrators log in with unique credentials. Uses JWT for session management.
+*   **Role-Based Access Control:** Distinct roles (student, admin) with different permissions.
+*   **Class Management (Admin):** Admins can create, view, and manage classes (subject, date, time, description).
+*   **Video Management (Admin):** Admins can associate unlisted YouTube video IDs with specific classes and add relevant metadata.
+*   **Student Enrollment:** Students can browse available classes and enroll. Admins approve/manage enrollment requests.
+*   **Protected Video Access:** Only authenticated students with approved enrollment status for a class can view its associated videos.
+*   **YouTube Integration:** Leverages YouTube for video hosting (unlisted videos) and embedding via the standard iframe player.
+*   **User-Friendly Interface:** A clean dashboard for students to view enrolled classes and lectures, and an admin panel for management tasks.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/4d11509d-2038-497c-b57d-faf7d5cdfe23) and start prompting.
+## Technologies Used
 
-Changes made via Lovable will be committed automatically to this repo.
+This is a full-stack application built with:
 
-**Use your preferred IDE**
+**Frontend:**
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+*   **Framework/Library:** React.js
+*   **Build Tool:** Vite
+*   **Language:** TypeScript
+*   **UI Components:** shadcn/ui
+*   **Styling:** Tailwind CSS
+*   **Routing:** React Router DOM
+*   **State Management:** React Context API
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+**Backend:**
 
-Follow these steps:
+*   **Runtime:** Node.js
+*   **Framework:** Express.js
+*   **Language:** TypeScript
+*   **Database:** MongoDB
+*   **ODM:** Mongoose
+*   **Authentication:** bcrypt (hashing), JSON Web Token (JWT)
+*   **Middleware:** CORS
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+## Project Structure
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+The project is organized into two main parts:
 
-# Step 3: Install the necessary dependencies.
-npm i
+*   **Root Directory (`/`):** Contains the frontend React application (Vite, src, public, etc.).
+*   **Backend Directory (`/backend`):** Contains the backend Node.js/Express application (server logic, API routes, database models, etc.).
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+Each part has its own `package.json` and `node_modules`.
 
-**Edit a file directly in GitHub**
+## Running Locally
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+**Prerequisites:**
 
-**Use GitHub Codespaces**
+*   Node.js (v16 or later recommended)
+*   npm (comes with Node.js)
+*   MongoDB Server (running locally or accessible via a connection string)
+*   Git
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+**Steps:**
 
-## What technologies are used for this project?
+1.  **Clone the Repository:**
+    ```bash
+    git clone <YOUR_REPOSITORY_URL>
+    cd <your-project-folder>
+    ```
 
-This project is built with:
+2.  **Install Frontend Dependencies:**
+    ```bash
+    npm install
+    ```
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+3.  **Install Backend Dependencies:**
+    ```bash
+    cd backend
+    npm install
+    cd .. 
+    ```
 
-## How can I deploy this project?
+4.  **Configure Environment Variables:**
+    *   **Backend:** Create a file named `.env` in the `/backend` directory. Copy the contents of `backend/.env.example` (if one exists) or add the following, replacing placeholders with your actual values:
+        ```dotenv
+        # backend/.env
+        MONGODB_URI=mongodb://localhost:27017/lecture_vault 
+        JWT_SECRET=YOUR_VERY_STRONG_SECRET_KEY_HERE
+        PORT=5000
+        FRONTEND_URL=http://localhost:<FRONTEND_PORT> # e.g., http://localhost:5173 or 8080/8081
+        ```
+    *   **Frontend:** Create a file named `.env` in the **root** project directory. Add the following, ensuring the port matches your backend port:
+        ```dotenv
+        # .env (root directory)
+        VITE_API_BASE_URL=http://localhost:5000 
+        ```
 
-Simply open [Lovable](https://lovable.dev/projects/4d11509d-2038-497c-b57d-faf7d5cdfe23) and click on Share -> Publish.
+5.  **Run the Backend Server:**
+    *   Open a terminal window, navigate to the `/backend` directory:
+        ```bash
+        cd backend
+        npm run dev 
+        ```
+    *   Look for confirmation messages like "Server listening on port 5000" and "MongoDB Connected...".
 
-## Can I connect a custom domain to my Lovable project?
+6.  **Run the Frontend Server:**
+    *   Open a **separate** terminal window, navigate to the **root** project directory:
+        ```bash
+        npm run dev
+        ```
+    *   Vite will output the local URL (e.g., `http://localhost:5173`, `http://localhost:8080`, etc.). Open this URL in your browser.
 
-Yes, you can!
+## Deployment
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+Hosting this full-stack application requires deploying the frontend and backend separately, along with a hosted database:
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+1.  **Database:** Use a cloud service like MongoDB Atlas (a free tier is available). Update the `MONGODB_URI` in your hosted backend's environment variables.
+2.  **Backend:** Deploy the Node.js/Express app to a PaaS like Render, Fly.io, or Heroku. Configure environment variables (`MONGODB_URI`, `JWT_SECRET`, `FRONTEND_URL` pointing to your live frontend URL).
+3.  **Frontend:** Build the React app (`npm run build`) and deploy the static files (`dist` folder) to a static hosting service like Netlify, Vercel, or Cloudflare Pages. Configure the `VITE_API_BASE_URL` environment variable to point to your live backend URL.
