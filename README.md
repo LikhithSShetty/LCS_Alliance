@@ -1,3 +1,7 @@
+<!--
+  README.md
+  Provides an overview, features, and technology stack for the LCS Alliance University Lecture Vault project.
+-->
 # LCS Alliance University - Lecture Vault
 
 ## Project Overview
@@ -116,3 +120,33 @@ Hosting this full-stack application requires deploying the frontend and backend 
 1.  **Database:** Use a cloud service like MongoDB Atlas (a free tier is available). Update the `MONGODB_URI` in your hosted backend's environment variables.
 2.  **Backend:** Deploy the Node.js/Express app to a PaaS like Render, Fly.io, or Heroku. Configure environment variables (`MONGODB_URI`, `JWT_SECRET`, `FRONTEND_URL` pointing to your live frontend URL).
 3.  **Frontend:** Build the React app (`npm run build`) and deploy the static files (`dist` folder) to a static hosting service like Netlify, Vercel, or Cloudflare Pages. Configure the `VITE_API_BASE_URL` environment variable to point to your live backend URL.
+
+<!--
+  index.html
+  This is the main HTML entry point for the LCS Alliance University Lecture Vault web application.
+  It sets up the root div and loads the frontend scripts.
+-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- ...existing code... -->
+# .gitignore
+# Specifies intentionally untracked files to ignore for the LCS Alliance University project.
+
+node_modules/
+dist/
+.env
+*.log
+
+// main.tsx
+// Entry point for the React frontend application. Renders the root component.
+
+import React from "react";
+import ReactDOM from "react-dom/client";
+// ...existing code...
+
+/* styles.css
+   Contains global styles for the LCS Alliance University web application.
+*/
+
+...existing code...
