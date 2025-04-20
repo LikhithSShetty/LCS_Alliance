@@ -28,39 +28,39 @@ const ClassContext = createContext<ClassContextType | undefined>(undefined);
 const mockClasses: Class[] = [
   {
     id: '1',
-    name: 'Introduction to Computer Science',
-    subject: 'Computer Science',
-    description: 'Learn the fundamentals of computer science, including algorithms, data structures, and programming concepts.',
+    name: 'Next gen operating system',
+    subject: 'operating system',
+    description: 'Learn the fundamentals of operating system, including algorithms, hardware, and programming concepts.',
     date: '2023-01-15',
     time: '10:00 AM',
-    imageUrl: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97'
+    imageUrl: 'https://www.trentonsystems.com/hubfs/Operating%20System%20.jpeg'
   },
   {
     id: '2',
-    name: 'Advanced Mathematics',
-    subject: 'Mathematics',
-    description: 'Explore complex mathematical concepts including calculus, linear algebra, and differential equations.',
+    name: 'PTRP',
+    subject: 'Probability Theory and Random Process',
+    description: 'Explore complex mathematical concepts including probability, and statistics.',
     date: '2023-01-16',
     time: '2:00 PM',
     imageUrl: 'https://images.unsplash.com/photo-1635070041078-e363dbe005cb'
   },
   {
     id: '3',
-    name: 'Physics 101',
-    subject: 'Physics',
-    description: 'An introduction to the fundamental principles of physics, covering mechanics, thermodynamics, and waves.',
+    name: 'AI',
+    subject: 'Artificial intelligence',
+    description: 'An introduction to the fundamental principles of Artificial Intelligence, covering machine learning, neural networks, and problem-solving.',
     date: '2023-01-17',
     time: '9:00 AM',
-    imageUrl: 'https://images.unsplash.com/photo-1636466497217-0d7c9ca4376b'
+    imageUrl: 'https://www.vizrt.com/wp-content/uploads/ai-ml-new20article-vizrt-hdr-img-1920x1080-1.png'
   },
   {
     id: '4',
-    name: 'Web Development Fundamentals',
-    subject: 'Web Development',
-    description: 'Learn HTML, CSS, and JavaScript to build responsive websites and web applications.',
+    name: 'COA',
+    subject: 'Computer Organization and Architecture',
+    description: 'Understand the structure, function, and design of computer systems, including processors, memory, and I/O devices.',
     date: '2023-01-18',
     time: '11:00 AM',
-    imageUrl: 'https://images.unsplash.com/photo-1587620962725-abab7fe55159'
+    imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTBQnLX8advrNjS9C06uu7uC5BCpVsccBixabLoaQsw7uK-1X45BGVrUSL-8kEJwOAFNiU&usqp=CAU'
   },
 ];
 
@@ -74,61 +74,61 @@ const mockVideos: Video[] = [
     time: new Date().toLocaleTimeString(),
     subject: 'University Orientation',
     description: 'Welcome orientation for new students at LCS ALLIANCE UNIVERSITY',
-    duration: '2:13:20'
+    duration: '13:20'
   },
   {
     id: '2',
-    title: 'Intro to CS - Lecture 1: Algorithms',
-    videoId: 'dQw4w9WgXcQ', // Replace with actual YouTube video ID
+    title: 'Operating System: Algorithms & Scheduling',
+    videoId: 'dQw4w9WgXcQ',
     classId: '1',
     date: '2023-01-15',
     time: '10:00 AM',
-    subject: 'Algorithms',
-    description: 'Introduction to fundamental algorithms and their analysis.',
+    subject: 'operating system',
+    description: 'Learn the fundamentals of operating system, including algorithms, hardware, and programming concepts.',
     duration: '45:20'
   },
   {
     id: '3',
-    title: 'Intro to CS - Lecture 2: Data Structures',
-    videoId: 'dQw4w9WgXcQ', // Replace with actual YouTube video ID
+    title: 'Operating System: Data Structures',
+    videoId: 'dQw4w9WgXcQ',
     classId: '1',
     date: '2023-01-17',
     time: '10:00 AM',
-    subject: 'Data Structures',
-    description: 'Overview of essential data structures for efficient programming.',
+    subject: 'operating system',
+    description: 'Learn the fundamentals of operating system, including algorithms, hardware, and programming concepts.',
     duration: '50:15'
   },
   {
     id: '4',
-    title: 'Advanced Math - Lecture 1: Calculus Review',
-    videoId: 'dQw4w9WgXcQ', // Replace with actual YouTube video ID
+    title: 'PTRP: Probability & Statistics Overview',
+    videoId: 'dQw4w9WgXcQ',
     classId: '2',
     date: '2023-01-16',
     time: '2:00 PM',
-    subject: 'Calculus',
-    description: 'Review of essential calculus concepts needed for the course.',
+    subject: 'Probability Theory and Random Process',
+    description: 'Explore complex mathematical concepts including probability, and statistics.',
     duration: '55:00'
   },
   {
     id: '5',
-    title: 'Physics 101 - Lecture 1: Newton\'s Laws',
-    videoId: 'dQw4w9WgXcQ', // Replace with actual YouTube video ID
+    title: 'AI: Introduction to Artificial Intelligence',
+    videoId: 'dQw4w9WgXcQ',
     classId: '3',
     date: '2023-01-17',
     time: '9:00 AM',
-    subject: 'Mechanics',
-    description: 'Introduction to Newton\'s three laws of motion.',
+    subject: 'Artificial intelligence',
+    description: 'An introduction to the fundamental principles of Artificial Intelligence, covering machine learning, neural networks, and problem-solving.',
     duration: '48:30'
   },
   {
     id: '6',
-    title: 'Web Development - Lecture 1: HTML Basics',
-    videoId: 'dQw4w9WgXcQ', // Replace with actual YouTube video ID
+    title: 'COA: Computer System Structure',
+    videoId: 'dQw4w9WgXcQ',
     classId: '4',
     date: '2023-01-18',
     time: '11:00 AM',
-    subject: 'HTML',
-    description: 'Introduction to HTML tags, elements, and document structure.',
+    subject: 'Computer Organization and Architecture',
+    description: 'Understand the structure, function, and design of computer systems, including processors, memory, and I/O devices.',
     duration: '42:10'
   },
 ];

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { PageLayout } from '@/components/Layout/PageLayout';
 import { Button } from '@/components/ui/button';
@@ -41,8 +40,8 @@ const Index = () => {
               </div>
             </div>
             <img
-              src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=3174&auto=format&fit=crop"
-              alt="Students watching lecture"
+              src="/lovable-uploads/university-pic2.jpg" // Updated image path
+              alt="University campus" // Updated alt text
               className="mx-auto aspect-video overflow-hidden rounded-xl object-cover object-center sm:w-full lg:order-last"
             />
           </div>
