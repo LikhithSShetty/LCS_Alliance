@@ -63,4 +63,4 @@ This document provides a detailed technical breakdown of how the project is arch
 - **Video:** YouTube Embed API
 
 ---
-For full requirements and rationale, see `Product resource doc.md`.
+
