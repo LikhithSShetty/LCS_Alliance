@@ -20,6 +20,27 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 // Ensure VITE_API_BASE_URL is defined in your root .env file
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
+// DEMO MODE - Set to true to bypass backend and use mock authentication
+const DEMO_MODE = true;
+
+// Mock users for demo
+const MOCK_USERS = [
+  {
+    id: '1',
+    username: 'admin',
+    email: 'admin@demo.com',
+    password: 'admin',
+    role: 'admin' as const,
+  },
+  {
+    id: '2',
+    username: 'student',
+    email: 'student@demo.com',
+    password: 'student',
+    role: 'student' as const,
+  },
+];
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
@@ -52,13 +73,45 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return user?.role === 'admin';
   };
 
-  // Login function - calls backend API
+  // Login function - DEMO MODE or calls backend API
   const login = async (email: string, password: string) => {
     setIsLoading(true);
     setError(null);
 
     try {
-      // Use the /api/auth prefix
+      if (DEMO_MODE) {
+        // DEMO MODE - Mock login without backend
+        await new Promise(resolve => setTimeout(resolve, 500)); // Simulate network delay
+        
+        const mockUser = MOCK_USERS.find(u => u.email === email && u.password === password);
+        
+        if (!mockUser) {
+          throw new Error('Invalid credentials. Try: admin@demo.com / admin or student@demo.com / student');
+        }
+
+        const userData = {
+          id: mockUser.id,
+          username: mockUser.username,
+          email: mockUser.email,
+          role: mockUser.role,
+        };
+        
+        const mockToken = btoa(`${mockUser.id}:${Date.now()}`);
+        
+        setToken(mockToken);
+        setUser(userData);
+        localStorage.setItem('lectureToken', mockToken);
+        localStorage.setItem('lectureUser', JSON.stringify(userData));
+
+        toast({
+          title: "Login successful (Demo Mode)",
+          description: `Welcome back, ${userData.username}!`,
+        });
+        
+        return;
+      }
+
+      // REAL MODE - Use backend API
       const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: 'POST',
         headers: {
@@ -102,13 +155,39 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  // Register function - calls backend API
+  // Register function - DEMO MODE or calls backend API
   const register = async (username: string, email: string, password: string, role: 'student' | 'admin' = 'student') => {
     setIsLoading(true);
     setError(null);
 
     try {
-      // Use the /api/auth prefix
+      if (DEMO_MODE) {
+        // DEMO MODE - Mock registration without backend
+        await new Promise(resolve => setTimeout(resolve, 500)); // Simulate network delay
+        
+        const userData = {
+          id: String(Date.now()),
+          username,
+          email,
+          role,
+        };
+        
+        const mockToken = btoa(`${userData.id}:${Date.now()}`);
+        
+        setToken(mockToken);
+        setUser(userData);
+        localStorage.setItem('lectureToken', mockToken);
+        localStorage.setItem('lectureUser', JSON.stringify(userData));
+
+        toast({
+          title: "Registration successful (Demo Mode)",
+          description: `Welcome, ${username}!`,
+        });
+        
+        return;
+      }
+
+      // REAL MODE - Use backend API
       const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
         method: 'POST',
         headers: {
@@ -131,10 +210,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       toast({
         title: "Registration successful",
-        description: `Welcome, ${username}! Please log in.`, // Or log in directly
+        description: `Welcome, ${username}!`,
       });
-      // Optionally log the user in directly after registration
-      // await login(email, password); // Uncomment if direct login is desired
 
     } catch (error) {
       const errorMessage = (error as Error).message;

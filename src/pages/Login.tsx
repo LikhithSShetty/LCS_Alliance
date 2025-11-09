@@ -29,25 +29,10 @@ const Login = () => {
           </CardHeader>
           <CardContent>
             <LoginForm />
-            
-            <Alert className="mt-6">
-              <Info className="h-4 w-4" />
-              <AlertTitle>Demo Credentials</AlertTitle>
-              <AlertDescription className="mt-2">
-                <div className="space-y-2 text-sm">
-                  <div>
-                    <strong>Student Account:</strong>
-                    <div>Email: student@example.com</div>
-                    <div>Password: password</div>
-                  </div>
-                  <div>
-                    <strong>Admin Account:</strong>
-                    <div>Email: admin@example.com</div>
-                    <div>Password: password</div>
-                  </div>
-                </div>
-              </AlertDescription>
-            </Alert>
+            <div className="mt-6 text-sm text-muted-foreground">
+              <div>Student: <code>student@demo.com</code> / <code>student</code></div>
+              <div>Admin: <code>admin@demo.com</code> / <code>admin</code></div>
+            </div>
           </CardContent>
         </Card>
       </div>
